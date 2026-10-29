@@ -1,0 +1,227 @@
+{
+  "info": {
+    "name": "AutoAndes Backend",
+    "description": "Colección para probar autenticación, servicios, vehículos, órdenes, reportes y OpenAPI.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "token", "value": "" },
+    { "key": "username", "value": "admin" },
+    { "key": "password", "value": "" },
+    { "key": "servicioId", "value": "1" },
+    { "key": "vehiculoId", "value": "1" },
+    { "key": "ordenId", "value": "1" },
+    { "key": "clienteId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login correcto', function () { pm.response.to.have.status(200); });",
+                  "if (pm.response.code === 200) { pm.collectionVariables.set('token', pm.response.json().token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Usuario autenticado",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Servicios",
+      "item": [
+        {
+          "name": "Listar servicios",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/servicios" }
+        },
+        {
+          "name": "Crear servicio",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"SRV-009\",\n  \"nombre\": \"Revisión preventiva\",\n  \"descripcion\": \"Revisión general del vehículo\",\n  \"precio\": 100.00,\n  \"duracionMinutos\": 60\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/servicios"
+          }
+        },
+        {
+          "name": "Obtener servicio",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/servicios/{{servicioId}}" }
+        },
+        {
+          "name": "Actualizar servicio",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"SRV-009\",\n  \"nombre\": \"Revisión preventiva actualizada\",\n  \"descripcion\": \"Revisión general del vehículo\",\n  \"precio\": 110.00,\n  \"duracionMinutos\": 75\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/servicios/{{servicioId}}"
+          }
+        },
+        {
+          "name": "Cambiar estado",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activo\": false\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/servicios/{{servicioId}}/estado"
+          }
+        },
+        {
+          "name": "Eliminar servicio",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/v1/servicios/{{servicioId}}" }
+        }
+      ]
+    },
+    {
+      "name": "Clientes y vehículos",
+      "item": [
+        {
+          "name": "Listar clientes",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/clientes" }
+        },
+        {
+          "name": "Listar vehículos por cliente",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/vehiculos?clienteId={{clienteId}}"
+          }
+        },
+        {
+          "name": "Crear vehículo",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"placa\": \"JJJ-999\",\n  \"marca\": \"Toyota\",\n  \"modelo\": \"Yaris\",\n  \"anio\": 2024,\n  \"clienteId\": {{clienteId}}\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/vehiculos"
+          }
+        },
+        {
+          "name": "Obtener vehículo",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/v1/vehiculos/{{vehiculoId}}" }
+        },
+        {
+          "name": "Actualizar vehículo",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"placa\": \"JJJ-999\",\n  \"marca\": \"Toyota\",\n  \"modelo\": \"Yaris Cross\",\n  \"anio\": 2024,\n  \"clienteId\": {{clienteId}}\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/vehiculos/{{vehiculoId}}"
+          }
+        },
+        {
+          "name": "Eliminar vehículo",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/v1/vehiculos/{{vehiculoId}}" }
+        }
+      ]
+    },
+    {
+      "name": "Órdenes",
+      "item": [
+        {
+          "name": "Registrar orden",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehiculoId\": {{vehiculoId}},\n  \"kilometraje\": 46000,\n  \"detalles\": [\n    { \"servicioId\": {{servicioId}}, \"cantidad\": 1 }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/ordenes"
+          }
+        },
+        {
+          "name": "Consultar órdenes",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/ordenes?placa=AAA-111&estado=REGISTRADA&desde=2026-10-01&hasta=2026-10-31"
+          }
+        },
+        {
+          "name": "Anular orden",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motivo\": \"Solicitud de anulación de prueba\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/v1/ordenes/{{ordenId}}/anular"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reportes y documentación",
+      "item": [
+        {
+          "name": "Ingresos por servicio",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/reportes/ingresos-por-servicio?desde=2026-10-01&hasta=2026-10-31"
+          }
+        },
+        {
+          "name": "OpenAPI JSON",
+          "request": { "method": "GET", "url": "{{baseUrl}}/v3/api-docs" }
+        }
+      ]
+    }
+  ]
+}
